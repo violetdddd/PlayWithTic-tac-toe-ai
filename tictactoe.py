@@ -163,3 +163,52 @@ def minimax(board):
                     ans=(now_value,action)
     return ans[1]
 
+def ab_minimax(board):
+    """
+    Returns the optimal action for the current player on the board.
+    """
+    #raise NotImplementedError
+    if terminal(board):
+        return None
+    def ab_MAX_VALUE(board, alpha, beta): 
+        if terminal(board): 
+            return utility(board)
+        now_max = float('-inf')
+        for action in actions(board): 
+            now_max = max(now_max, ab_MIN_VALUE(result(board, action), alpha, beta))
+            if now_max >= beta:
+                return now_max 
+            alpha = max(alpha, now_max)
+        return now_max
+    def ab_MIN_VALUE(board, alpha, beta): 
+        if terminal(board): 
+            return utility(board)
+        now_min = float('inf')
+        for action in actions(board): 
+            now_min = min(now_min, ab_MAX_VALUE(result(board, action), alpha, beta))
+            if now_min <= alpha:
+                return now_min 
+            beta = min(beta, now_min)
+        return now_min
+    
+    alpha, beta = float('-inf'), float('inf')
+    now_action = None
+    if player(board) == X:
+        for action in actions(board):
+            now_value=ab_MIN_VALUE(result(board, action), alpha, beta)
+            if now_value > alpha:
+                alpha = now_value
+                now_action = action
+            elif now_value == alpha:
+                if random.randint(0,1):
+                    now_action = action
+    else:
+        for action in actions(board):
+            now_value=ab_MAX_VALUE(result(board, action), alpha, beta)
+            if now_value < beta:
+                beta = now_value
+                now_action = action
+            elif now_value == beta:
+                if random.randint(0,1):
+                    now_action = action
+    return now_action
